@@ -16,15 +16,15 @@ button{border:0;border-radius:16px;padding:14px 18px;font-size:17px;cursor:point
 <div class="modal" id="modal"><div class="box"><h2>Название вкладки</h2><input id="name" type="text" placeholder="Например: Попугаи"><div class="actions"><button class="cancel" onclick="closeModal()">Отмена</button><button onclick="createTab()">OK</button></div></div></div>
 <input id="picker" type="file" accept="image/*" multiple hidden>
 <script>
-const KEY='photoTabs_v1'; let tabs=JSON.parse(localStorage.getItem(KEY)||'[]'), current=null;
+const KEY='photoTabs_v1'; const app=document.getElementById('app'), modalEl=document.getElementById('modal'), nameEl=document.getElementById('name'), pickerEl=document.getElementById('picker'); let tabs=JSON.parse(localStorage.getItem(KEY)||'[]'), current=null;
 function save(){localStorage.setItem(KEY,JSON.stringify(tabs))}
 function renderHome(){current=null;app.innerHTML='<button class="plus" onclick="openModal()">＋</button><div class="tabs">'+(tabs.length?tabs.map((t,i)=>'<div class="tab" onclick="openTab('+i+')">'+esc(t)+'</div>').join(''):'<div class="empty">Нажми ＋ и создай первую вкладку.</div>')+'</div>'}
 function openTab(i){current=i;renderTab()}
 function renderTab(){const n=tabs[current], imgs=JSON.parse(localStorage.getItem('imgs_'+current)||'[]');app.innerHTML='<button class="back" onclick="renderHome()">← Назад</button><h2>'+esc(n)+'</h2><button class="add" onclick="picker.click()">🖼️ Добавить фото</button><div class="gallery">'+imgs.map(x=>'<img src="'+x+'">').join('')+'</div>'+(imgs.length?'':'<div class="empty">Фото пока нет.</div>')}
-picker.onchange=()=>{[...picker.files].forEach(file=>{const r=new FileReader();r.onload=()=>{const k='imgs_'+current,a=JSON.parse(localStorage.getItem(k)||'[]');a.push(r.result);localStorage.setItem(k,JSON.stringify(a));renderTab()};r.readAsDataURL(file)});picker.value=''}
-function openModal(){modal.style.display='flex';name.value='';name.focus()}
-function closeModal(){modal.style.display='none'}
-function createTab(){const n=name.value.trim();if(!n)return;tabs.push(n);save();closeModal();renderHome()}
+pickerEl.onchange=()=>{[...pickerEl.files].forEach(file=>{const r=new FileReader();r.onload=()=>{const k='imgs_'+current,a=JSON.parse(localStorage.getItem(k)||'[]');a.push(r.result);localStorage.setItem(k,JSON.stringify(a));renderTab()};r.readAsDataURL(file)});pickerEl.value=''}
+function openModal(){modalEl.style.display='flex';nameEl.value='';nameEl.focus()}
+function closeModal(){modalEl.style.display='none'}
+function createTab(){const n=nameEl.value.trim();if(!n)return;tabs.push(n);save();closeModal();renderHome()}
 function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 renderHome();
 </script></body></html>
