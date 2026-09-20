@@ -1,43 +1,25 @@
 <!doctype html>
-<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Фото-вкладки</title>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Фото-вкладки</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6f7fb;color:#202124}
-header{padding:22px;text-align:center;font-size:28px;font-weight:700}.wrap{max-width:720px;margin:auto;padding:16px}
-button{border:0;border-radius:16px;padding:14px 18px;font-size:17px;cursor:pointer;background:#222;color:#fff}.plus{width:58px;height:58px;border-radius:50%;font-size:30px;display:block;margin:0 auto 22px}
-.tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}.tab{background:#fff;border-radius:18px;padding:20px;min-height:100px;box-shadow:0 3px 14px #0001;font-size:18px;font-weight:600;cursor:pointer}
-.back{background:#ddd;color:#222;margin-bottom:14px}.add{margin-bottom:18px}.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.gallery img{width:100%;aspect-ratio:1;border-radius:14px;object-fit:cover;background:#ddd}
-.empty{text-align:center;color:#777;padding:40px 10px}.modal{position:fixed;inset:0;background:#0006;display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.box{background:#fff;border-radius:20px;padding:22px;width:min(420px,100%)}input[type=text]{display:block;width:100%;padding:13px;border:1px solid #bbb;border-radius:12px;font-size:17px;margin:12px 0;color:#202124;background:#fff}.actions{display:flex;gap:10px;justify-content:flex-end}.cancel{background:#ddd;color:#222}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f6f7fb;color:#202124}header{padding:22px;text-align:center;font-size:28px;font-weight:700}.wrap{max-width:720px;margin:auto;padding:16px}button{border:0;border-radius:16px;padding:14px 18px;font-size:17px;cursor:pointer;background:#222;color:#fff}.plus{width:58px;height:58px;border-radius:50%;font-size:30px;display:block;margin:0 auto 22px}.tabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}.tab{background:#fff;border-radius:18px;padding:20px;min-height:100px;box-shadow:0 3px 14px #0001;font-size:18px;font-weight:600;cursor:pointer}.back{background:#ddd;color:#222;margin-bottom:14px}.add{margin-bottom:18px}.gallery{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.gallery img{width:100%;aspect-ratio:1;border-radius:14px;object-fit:cover;background:#ddd}.empty{text-align:center;color:#777;padding:40px 10px}.modal{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;align-items:center;justify-content:center;padding:20px;z-index:9999}.box{background:#fff;border-radius:20px;padding:22px;width:min(420px,100%)}input[type=text]{display:block;width:100%;padding:13px;border:1px solid #bbb;border-radius:12px;font-size:17px;margin:12px 0;color:#202124;background:#fff}.actions{display:flex;gap:10px;justify-content:flex-end}.cancel{background:#ddd;color:#222}
 </style></head><body>
 <header>Фото-вкладки</header><main class="wrap" id="app"></main>
-<div class="modal" id="modal"><div class="box"><h2>Название вкладки</h2><form id="nameForm"><input id="name" type="text" placeholder="Например: Попугаи" autocomplete="off"><div class="actions"><button type="button" class="cancel" id="cancelBtn">Отмена</button><button type="submit" id="okBtn">OK</button></div></form></div></div>
+<div class="modal" id="modal"><div class="box"><h2>Название вкладки</h2><input id="name" type="text" placeholder="Например: Попугаи" autocomplete="off"><div class="actions"><button type="button" class="cancel" onclick="closeModal()">Отмена</button><button type="button" onclick="createTab()">OK</button></div></div></div>
 <input id="picker" type="file" accept="image/*" multiple hidden>
 <script>
-(function(){
-'use strict';
 var KEY='photoTabs_v1';
-var app=document.getElementById('app');
-var modal=document.getElementById('modal');
-var nameInput=document.getElementById('name');
-var form=document.getElementById('nameForm');
-var cancel=document.getElementById('cancelBtn');
-var picker=document.getElementById('picker');
-var tabs=[];
-var current=-1;
-try{tabs=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(tabs))tabs=[]}catch(e){tabs=[]}
-function save(){localStorage.setItem(KEY,JSON.stringify(tabs))}
-function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function openModal(){modal.style.display='flex';nameInput.value='';nameInput.focus()}
-function closeModal(){modal.style.display='none'}
-function createTab(e){if(e)e.preventDefault();var n=nameInput.value.trim();if(!n){nameInput.focus();return false}tabs.push(n);save();closeModal();renderHome();return false}
-function renderHome(){current=-1;var html='<button class="plus" id="plusBtn" type="button">＋</button><div class="tabs">';if(tabs.length){tabs.forEach(function(t,i){html+='<div class="tab" data-index="'+i+'">'+esc(t)+'</div>'})}else{html+='<div class="empty">Нажми ＋ и создай первую вкладку.</div>'}html+='</div>';app.innerHTML=html;document.getElementById('plusBtn').addEventListener('click',openModal);app.querySelectorAll('.tab').forEach(function(el){el.addEventListener('click',function(){openTab(Number(el.getAttribute('data-index')))})})}
-function openTab(i){current=i;renderTab()}
-function renderTab(){var imgs=[];try{imgs=JSON.parse(localStorage.getItem('imgs_'+current)||'[]')}catch(e){imgs=[]}var html='<button class="back" id="backBtn" type="button">← Назад</button><h2>'+esc(tabs[current])+'</h2><button class="add" id="addBtn" type="button">🖼️ Добавить фото</button><div class="gallery">';imgs.forEach(function(x){html+='<img src="'+x+'">' });html+='</div>';if(!imgs.length)html+='<div class="empty">Фото пока нет.</div>';app.innerHTML=html;document.getElementById('backBtn').addEventListener('click',renderHome);document.getElementById('addBtn').addEventListener('click',function(){picker.click()})}
-form.addEventListener('submit',createTab);
-cancel.addEventListener('click',closeModal);
-modal.addEventListener('click',function(e){if(e.target===modal)closeModal()});
-nameInput.addEventListener('keydown',function(e){if(e.key==='Enter'){createTab(e)}});
-picker.addEventListener('change',function(){Array.prototype.forEach.call(picker.files,function(file){var reader=new FileReader();reader.onload=function(){var key='imgs_'+current;var arr=[];try{arr=JSON.parse(localStorage.getItem(key)||'[]')}catch(e){arr=[]}arr.push(reader.result);localStorage.setItem(key,JSON.stringify(arr));renderTab()};reader.readAsDataURL(file)};picker.value=''});
+var tabs=[];var current=-1;
+try{tabs=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(tabs))tabs=[];}catch(e){tabs=[];}
+function save(){localStorage.setItem(KEY,JSON.stringify(tabs));}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function openModal(){document.getElementById('modal').style.display='flex';document.getElementById('name').value='';setTimeout(function(){document.getElementById('name').focus();},50);}
+function closeModal(){document.getElementById('modal').style.display='none';}
+function createTab(){var input=document.getElementById('name');var n=input.value.trim();if(!n){input.focus();return;}tabs.push(n);save();closeModal();renderHome();}
+function renderHome(){current=-1;var html='<button class="plus" type="button" onclick="openModal()">＋</button><div class="tabs">';if(tabs.length){tabs.forEach(function(t,i){html+='<div class="tab" onclick="openTab('+i+')">'+esc(t)+'</div>';});}else{html+='<div class="empty">Нажми ＋ и создай первую вкладку.</div>';}html+='</div>';document.getElementById('app').innerHTML=html;}
+function openTab(i){current=i;renderTab();}
+function renderTab(){var imgs=[];try{imgs=JSON.parse(localStorage.getItem('imgs_'+current)||'[]');}catch(e){imgs=[];}var html='<button class="back" type="button" onclick="renderHome()">← Назад</button><h2>'+esc(tabs[current])+'</h2><button class="add" type="button" onclick="document.getElementById(\'picker\').click()">🖼️ Добавить фото</button><div class="gallery">';imgs.forEach(function(x){html+='<img src="'+x+'">';});html+='</div>';if(!imgs.length)html+='<div class="empty">Фото пока нет.</div>';document.getElementById('app').innerHTML=html;}
+document.getElementById('picker').onchange=function(){var files=Array.prototype.slice.call(this.files);files.forEach(function(file){var r=new FileReader();r.onload=function(){var key='imgs_'+current;var a=[];try{a=JSON.parse(localStorage.getItem(key)||'[]');}catch(e){a=[];}a.push(r.result);localStorage.setItem(key,JSON.stringify(a));renderTab();};r.readAsDataURL(file);});this.value='';};
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+document.getElementById('name').addEventListener('keydown',function(e){if(e.key==='Enter')createTab();});
 renderHome();
-})();
 </script></body></html>
