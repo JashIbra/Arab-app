@@ -28,7 +28,8 @@
   </div>
 </header><main class="wrap" id="app"></main>
 <div class="modal" id="modal"><div class="box"><h2>Название вкладки</h2><input id="name" type="text" placeholder="Например: Попугаи" autocomplete="off"><div class="actions"><button class="cancel" id="cancelBtn" type="button">Отмена</button><button id="okBtn" type="button">OK</button></div></div></div>
-<input id="picker" type="file" accept="image/*" multiple hidden>\n<div class="photoViewer" id="photoViewer"><button class="photoViewerClose" id="photoViewerClose" type="button">×</button><img id="photoViewerImg" alt="Фото"></div>
+<input id="picker" type="file" accept="image/*" multiple hidden>
+<div class="photoViewer" id="photoViewer"><button class="photoViewerClose" id="photoViewerClose" type="button">×</button><img id="photoViewerImg" alt="Фото"></div>
 <script>
 (function(){
 var KEY='photoTabs_v1';
@@ -41,7 +42,9 @@ var current=-1;
 var frameKey='photoTabs_frame_v1';
 var selectedFrame=localStorage.getItem(frameKey)||'';
 var bgKey='photoTabs_bg_v1';
-var selectedBg=localStorage.getItem(bgKey)||'';\nvar photoViewer=document.getElementById('photoViewer');\nvar photoViewerImg=document.getElementById('photoViewerImg');
+var selectedBg=localStorage.getItem(bgKey)||'';
+var photoViewer=document.getElementById('photoViewer');
+var photoViewerImg=document.getElementById('photoViewerImg');
 
 function applyBackground(){
   document.body.classList.remove('page-bg-mint','page-bg-ruby','page-bg-orange');
@@ -97,7 +100,9 @@ function deleteTab(){
   }
   localStorage.removeItem('imgs_'+tabs.length);saveTabs();renderHome();
 }
-function openPhoto(src){photoViewerImg.src=src;photoViewer.style.display='flex';}\nfunction closePhoto(){photoViewer.style.display='none';photoViewerImg.src='';}\nfunction deletePhoto(index){
+function openPhoto(src){photoViewerImg.src=src;photoViewer.style.display='flex';}
+function closePhoto(){photoViewer.style.display='none';photoViewerImg.src='';}
+function deletePhoto(index){
   var arr=getImages();if(index<0||index>=arr.length)return;
   if(!confirm('Удалить это фото?'))return;
   arr.splice(index,1);
@@ -130,7 +135,10 @@ document.getElementById('frameRemove').onclick=function(e){
   e.stopPropagation();selectedFrame='';localStorage.removeItem(frameKey);document.getElementById('frameMenu').style.display='none';renderHome();
 };
 document.addEventListener('click',function(){document.getElementById('frameMenu').style.display='none';document.getElementById('bgMenu').style.display='none';});
-document.getElementById('photoViewerClose').onclick=closePhoto;\nphotoViewer.onclick=function(e){if(e.target===photoViewer)closePhoto();};\ndocument.addEventListener('keydown',function(e){if(e.key==='Escape')closePhoto();});\ndocument.getElementById('okBtn').onclick=createTab;
+document.getElementById('photoViewerClose').onclick=closePhoto;
+photoViewer.onclick=function(e){if(e.target===photoViewer)closePhoto();};
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closePhoto();});
+document.getElementById('okBtn').onclick=createTab;
 document.getElementById('cancelBtn').onclick=closeModal;
 nameInput.onkeydown=function(e){if(e.key==='Enter')createTab();};
 modal.onclick=function(e){if(e.target===modal)closeModal();};
