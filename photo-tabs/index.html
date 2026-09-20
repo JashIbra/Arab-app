@@ -44,6 +44,10 @@ function closeModal(){modal.style.display='none';}
 function createTab(){
   var n=nameInput.value.trim();
   if(!n){nameInput.focus();return;}
+  if(tabs.length>=4){
+    alert('Можно создать максимум 4 вкладки.');
+    return;
+  }
   tabs.push(n);
   saveTabs();
   closeModal();
